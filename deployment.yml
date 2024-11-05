@@ -1,0 +1,44 @@
+name: Deploy VM for test-dx-mq-sub01
+on: 
+  workflow_dispatch:
+    inputs: 
+      location:
+        description: "Choose the location for resources deployment to deploy"
+        required: true
+        type: choice
+        options:
+          - centralus
+          - eastus
+          - eastus2
+          - uksouth
+          - japaneast
+          - northcentralus
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  build-and-deploy:
+    runs-on: azure-proddx-ubuntu-latest-2-core
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log into Azure CLI
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.CLIENT_ID }}
+        tenant-id: ${{ secrets.TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+        enable-AzPSSession: true
+        allow-no-subscriptions: true
+
+    - name: Deploy VM for test-dx-mq-sub01
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          Get-Location          
+          Set-AzContext -Subscription ${{ secrets.AZURE_SUBSCRIPTION }}
+          $deploymentName = "Deploy"+(Get-Date -Format "MMddyyyyHHmmss")
+          New-AzDeployment -Name $deploymentName -location ${{ github.event.inputs.location }} -TemplateFile ..\MQ_Azure_Bicep_Modules\deploy\glb-test-dx-mq-sub01\VM.bicep -TemplateParameterFile ..\MQ_Azure_Bicep_Modules\deploy\glb-test-dx-mq-sub01\vm.parameters.json
+        azPSVersion: latest

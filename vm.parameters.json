@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+     "adminUsername": {
+        "value": "admin"
+      },
+      "adminPassword": {
+        "value": "password"
+      },
+      "location": {
+        "value": "central US"
+      },
+      "vmName": {
+        "value": "test-vm"
+      },
+      "vmSize": {
+        "value": "Standard_B1s"
+      }
+      
+      
+    }
+  }
